@@ -43,7 +43,7 @@ def welcome():
 
 @app.route('/precipitation')
 def precipitation():
-     # Create our session (link) from Python to the DB
+    # Create our session (link) from Python to the DB
     session = Session(engine)
 
     # Convert the query results to a dictionary using date as the key and prcp as the value
@@ -60,7 +60,8 @@ def precipitation():
 
 @app.route('/stations')
 def stations():
-     # Create our session (link) from Python to the DB
+    
+    # Create our session (link) from Python to the DB
     session = Session(engine)
 
     # Query database and return stations
@@ -76,6 +77,7 @@ def stations():
 
 @app.route('/tobs')
 def tobs():
+    
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
@@ -95,8 +97,7 @@ def tobs():
 
 @app.route('/temp/<start>')
 def start(start=None, end=None):
-
-    # Create session (link) from Python to the DB
+    # Create our session (link) from Python to the DB
     session = Session(engine)
 
     min_temp_ = session.query(Measurement.station, Measurement.prcp,
@@ -124,14 +125,13 @@ def start(start=None, end=None):
 
 #When given the start only, calculate TMIN, TAVG, and TMAX for all dates greater than or equal to the start date.
 
-@app.route('/temp/<int:start>')
-def start(end=None):
-
-    # Create session (link) from Python to the DB
+@app.route('/tempo/<int:starti>')
+def starti(starti):
+    # Create our session (link) from Python to the DB
     session = Session(engine)
-
-    min_temp_ = session.query(Measurement.station, Measurement.prcp,
-             func.min(Measurement.tobs)).filter(Measurement.date >= dt.date(start)).all()
+    starti = dt.date(starti)
+    
+    new_min_temp_ = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= dt.date(starti)).all()
 
     # avg_temp_ = session.query(Measurement.station, Measurement.prcp,
     #          func.avg(Measurement.tobs)).filter(Measurement.date >= dt.date(start), Measurement.date > dt.date(2016,8,23)).all()
@@ -141,11 +141,11 @@ def start(end=None):
 
     session.close()
     
-    return jsonify(min_temp_)
+    return jsonify(new_min_temp_)
 
-@app.route('/api/v1.0/<start>/<end>')
-def end():
-    return render_template('end.html')
+# @app.route('/api/v1.0/<start>/<end>')
+# def end():
+#     return render_template('end.html')
 
 
 
