@@ -124,8 +124,24 @@ def start(start=None, end=None):
 
 #When given the start only, calculate TMIN, TAVG, and TMAX for all dates greater than or equal to the start date.
 
+@app.route('/temp/<int:start>')
+def start(end=None):
 
+    # Create session (link) from Python to the DB
+    session = Session(engine)
 
+    min_temp_ = session.query(Measurement.station, Measurement.prcp,
+             func.min(Measurement.tobs)).filter(Measurement.date >= dt.date(start)).all()
+
+    # avg_temp_ = session.query(Measurement.station, Measurement.prcp,
+    #          func.avg(Measurement.tobs)).filter(Measurement.date >= dt.date(start), Measurement.date > dt.date(2016,8,23)).all()
+
+    # max_temp_ = session.query(Measurement.station, Measurement.prcp,
+    #          func.max(Measurement.tobs)).filter(Measurement.date >= dt.date(start), Measurement.date > dt.date(2016,8,23)).all()
+
+    session.close()
+    
+    return jsonify(min_temp_)
 
 @app.route('/api/v1.0/<start>/<end>')
 def end():
