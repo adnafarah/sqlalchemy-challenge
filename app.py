@@ -99,15 +99,16 @@ def tobs():
 def start(start=None, end=None):
     # Create our session (link) from Python to the DB
     session = Session(engine)
+    start = dt.datetime.strptime(start,'%m%d%Y')
 
     min_temp_ = session.query(Measurement.station, Measurement.prcp,
-             func.min(Measurement.tobs)).filter(Measurement.date < dt.date(2017,8,23), Measurement.date > dt.date(2016,8,23)).all()
+             func.min(Measurement.tobs)).filter(Measurement.date >= start).all()
 
     avg_temp_ = session.query(Measurement.station, Measurement.prcp,
-             func.avg(Measurement.tobs)).filter(Measurement.date < dt.date(2017,8,23), Measurement.date > dt.date(2016,8,23)).all()
+             func.avg(Measurement.tobs)).filter(Measurement.date >= start).all()
 
     max_temp_ = session.query(Measurement.station, Measurement.prcp,
-             func.max(Measurement.tobs)).filter(Measurement.date < dt.date(2017,8,23), Measurement.date > dt.date(2016,8,23)).all()
+             func.max(Measurement.tobs)).filter(Measurement.date >= start).all()
 
     session.close()
     
@@ -125,23 +126,23 @@ def start(start=None, end=None):
 
 #When given the start only, calculate TMIN, TAVG, and TMAX for all dates greater than or equal to the start date.
 
-@app.route('/tempo/<int:starti>')
-def starti(starti):
+@app.route('/<start>/<end>')
+def start(start, end):
     # Create our session (link) from Python to the DB
     session = Session(engine)
-    starti = dt.date(starti)
+    start = dt.datetime.strptime(start,'%m%d%Y')
     
-    new_min_temp_ = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= dt.date(starti)).all()
+    new_min_temp_ = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= start).all()
 
-    # avg_temp_ = session.query(Measurement.station, Measurement.prcp,
-    #          func.avg(Measurement.tobs)).filter(Measurement.date >= dt.date(start), Measurement.date > dt.date(2016,8,23)).all()
+    new_avg_temp_ = session.query(unc.avg(Measurement.tobs)).filter(Measurement.date >= dt.date(start), Measurement.date > dt.date(2016,8,23)).all()
 
-    # max_temp_ = session.query(Measurement.station, Measurement.prcp,
-    #          func.max(Measurement.tobs)).filter(Measurement.date >= dt.date(start), Measurement.date > dt.date(2016,8,23)).all()
+    new_max_temp_ = session.query(Measurement.station, Measurement.prcp,
+             func.max(Measurement.tobs)).filter(Measurement.date >= dt.date(start), Measurement.date > dt.date(2016,8,23)).all()
 
+    start_end_list = [new_min_temp_, new_avg_temp_, new_max_temp_]
     session.close()
     
-    return jsonify(new_min_temp_)
+    return jsonify(start_end_list)
 
 # @app.route('/api/v1.0/<start>/<end>').
 # def end():
