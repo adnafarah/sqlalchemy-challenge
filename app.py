@@ -38,6 +38,7 @@ def welcome():
         f"/stations"
         f"/tobs"
         f"/start"
+        f"/start/end"
     )
 
 
@@ -95,7 +96,7 @@ def tobs():
 
 
 
-@app.route('/temp/<start>')
+@app.route('/<start>')
 def start(start=None, end=None):
     # Create our session (link) from Python to the DB
     session = Session(engine)
@@ -124,30 +125,25 @@ def start(start=None, end=None):
     return jsonify(results_list)
         
 
-#When given the start only, calculate TMIN, TAVG, and TMAX for all dates greater than or equal to the start date.
-
-@app.route('/<start>/<end>')
-def start(start, end):
+@app.route('/<starti>/<end>')
+def starti(starti, end):
     # Create our session (link) from Python to the DB
     session = Session(engine)
-    start = dt.datetime.strptime(start,'%m%d%Y')
+    starti = dt.datetime.strptime(starti,'%m%d%Y')
+    end = dt.datetime.strptime(end,'%m%d%Y')
     
-    new_min_temp_ = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= start).all()
+    new_min_temp_ = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= starti, Measurement.date <= end).all()
 
-    new_avg_temp_ = session.query(unc.avg(Measurement.tobs)).filter(Measurement.date >= dt.date(start), Measurement.date > dt.date(2016,8,23)).all()
+    new_avg_temp_ = session.query(func.avg(Measurement.tobs)).filter(Measurement.date >= starti, Measurement.date <= end).all()
 
-    new_max_temp_ = session.query(Measurement.station, Measurement.prcp,
-             func.max(Measurement.tobs)).filter(Measurement.date >= dt.date(start), Measurement.date > dt.date(2016,8,23)).all()
+    new_max_temp_ = session.query(func.max(Measurement.tobs)).filter(Measurement.date >= starti, Measurement.date <= end).all()
+    session.close()
 
     start_end_list = [new_min_temp_, new_avg_temp_, new_max_temp_]
-    session.close()
+
+    start_end_list = list(np.ravel(start_end_list))
     
     return jsonify(start_end_list)
-
-# @app.route('/api/v1.0/<start>/<end>').
-# def end():
-#     return render_template('end.html')
-
 
 
 if __name__ == "__main__":
