@@ -1,6 +1,6 @@
 # sqlalchemy-challenge
 
-This aim of this project is to complete climate analysis & plot it and then design a Flask API based on the queries developed. 
+This aim of this project was to complete climate analysis & plot it and then design a Flask API based on the queries developed. 
 
 ## Part 1: Climate Analysis and Exploration
 In this section, I used Python and SQLAlchemy to perform basic climate analysis and data exploration of the climate database. This was completed using SQLAlchemy ORM queries, Pandas, and Matplotlib.
@@ -53,7 +53,7 @@ To perform an analysis of stations in the area, the following was carried out:
     Queried the dates and temperature observations of the most active station for the previous year of data.
     Returned a JSON list of temperature observations (TOBS) for the previous year.
 
-*/<start> and /api/v1.0/<start>/<end>:
+* /<start> and /api/v1.0/<start>/<end>:
     Returned a JSON list of the minimum temperature, the average temperature, and the maximum temperature for a given start or start-end range.
     
     When given the start only, calculated TMIN, TAVG, and TMAX for all dates greater than or equal to the start date.
