@@ -143,7 +143,7 @@ def starti(starti):
     
     return jsonify(new_min_temp_)
 
-# @app.route('/api/v1.0/<start>/<end>')
+# @app.route('/api/v1.0/<start>/<end>').
 # def end():
 #     return render_template('end.html')
 
