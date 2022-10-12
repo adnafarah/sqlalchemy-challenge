@@ -34,10 +34,10 @@ def welcome():
     """List all available api routes."""
     return (
         f"Available Routes:<br/>"
-        f"/api/v1.0/precipitation<br/>"
-        f"/api/v1.0/stations"
-        f"/api/v1.0/tobs"
-        f"/api/v1.0/<start>"
+        f"/precipitation<br/>"
+        f"/stations"
+        f"/tobs"
+        f"/start"
     )
 
 
@@ -93,8 +93,8 @@ def tobs():
 
 
 
-@app.route('/start')
-def start():
+@app.route('/temp/<start>')
+def start(start=None, end=None):
 
     # Create session (link) from Python to the DB
     session = Session(engine)
@@ -110,25 +110,22 @@ def start():
 
     session.close()
     
-    #convert to normal list 
+    #add to list
     results_list_ = [min_temp_, max_temp_, avg_temp_]
-
-    # [
-    #     [('USC00519397', 0.08, 74.56872465074358)]
-    #     [('USC00519397', 0.08, 74.56872465074358)]
-    #     [('USC00519397', 0.08, 74.56872465074358)]
-    # ]
 
     results_list = []
     for x in range(len(results_list_)):
         #print(results_list_[x])
         results_list.append(results_list_[x])
+    results_list = list(np.ravel(results_list))
 
     return jsonify(results_list)
         
 
-    #min temperature, the avg temperature, and the max temperature for a given start or start-end range.
-    return render_template('start.html')
+#When given the start only, calculate TMIN, TAVG, and TMAX for all dates greater than or equal to the start date.
+
+
+
 
 @app.route('/api/v1.0/<start>/<end>')
 def end():
